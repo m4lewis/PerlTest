@@ -1,6 +1,8 @@
 package TestData;
 
+use Cwd;
 use GUI::DB;
+use base 'Exporter';
 
 #Create table if not exists
 my $dbh = dbConnect;
@@ -9,32 +11,49 @@ my $sql = "CREATE TABLE IF NOT EXISTS mailing (
         );";
 query($dbh, $sql);
 
+
+our @EXPORT = qw(AddTestData RemoveTestData);
+
 ###########################################################
-#AddTestData (# of domains to test, #of emails to test)####
+#AddTestData (Day # to run for)############################
 #Purpose: Used to generate test data in database###########
+#Searches for randomly generated email addressses in
+# TestInput folder
 ###########################################################
 sub AddTestData {
-        my $numDomains = shift;
-        my $numEmails = shift;
 
+	my $day = shift;
+	my $run = shift;
+	my $dir = getcwd;
+	print "Current working dir = $dir\n";
+
+        my $testFolder = "$dir/TestInput/$run/";
+        $sql = "INSERT INTO mailing (addr) VALUES (
+                        ? );";
+	
+	print "Inserting Data...\n";
+	#Open Filename to read in email addresses
+	my $filename = "$testFolder"."day$day.txt";
+	open my $input, '<' , $filename or die "Could not open $filename: $!";
+
+	while (my $line = <$input>) {
+
+        query($dbh, $sql, $line);
+
+	}
+	close($input);
+
+	print "Inserting Data Completed!\n";
+}
+
+sub RemoveTestData {
 	my $sql = "DELETE FROM mailing;";
 	print "Deleting Existing Values in 'mailing' table...\n";
 	query($dbh, $sql);
 	print "Deleting Data Completed!\n";
-
-        for (my $i = 0; $i < $numEmails; $i++) {
-                my $username = "u".$i;
-                my $dom = int(rand($numDomains));
-                my $domain = "domain".$dom.".com";
-                my $addr = $username."\@".$domain;
-                $sql = "INSERT INTO mailing (addr) VALUES (
-                        ? );";
-
-		print "Inserting Data into 'mailing' table...\n";
-                query($dbh, $sql, $addr);
-        }
-	print "Inserting Data Completed!\n";
 }
+
+1;
 
 __END__
 
