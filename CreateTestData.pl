@@ -17,7 +17,6 @@ for (my $i = 0; $i < 30; $i++) {
 
 		print $fh "$addr\n";
         }
-        $numDomains += 3500;
         print "Day $day Complete!\n";
 	close $fh;
 }

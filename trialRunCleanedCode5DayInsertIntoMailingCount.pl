@@ -4,7 +4,6 @@ use Data::Dumper;
 use GUI::DB;
 use TestData;
 use DBManager;
-use DomainReport;
 
 my $dbh = dbConnect;
 
@@ -25,13 +24,11 @@ my $month = '06';
 
 
 #For 30 days adds a chunk of data to 'mailing'
-for (my $day = 1; $day <= 30; $day++) {
+for (my $day = 1; $day <= 5; $day++) {
 	AddTestData($day, $run);
 	my $date = "$year-$month-$day";
+	print "Day $day Complete!\n";
 	CreateHashForCountTable($date);
 }
-
-print "Printing Top 50 Domains By % Change Of Count For Last 30 Days\n\n";
-CreateDomainReport('2015-06-01', '2015-06-30');
 
 
